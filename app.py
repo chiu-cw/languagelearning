@@ -51,4 +51,4 @@ if translate_button:
     if not hf_token:
         st.error("❌ 請先在左側邊欄輸入您的 Hugging Face Token (hf_...)！")
     elif not user_input.strip():
-        st.warning("⚠️ 請輸入需要翻譯的古
+        st.warning("⚠️ 請輸入需要翻譯的古文。")
