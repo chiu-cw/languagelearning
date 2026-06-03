@@ -22,17 +22,17 @@ if analyze_button:
     elif not user_input.strip():
         st.warning("⚠️ 請輸入需要解析的詩詞或古文。")
     else:
-        with st.spinner("⏳ 新大腦正在精密考證古籍中..."):
+        with st.spinner("⏳ 權威 AI 教授正在精密考證古籍中..."):
             try:
                 # 初始化客戶端
                 client = InferenceClient(token=hf_token)
                 
-                # 重新打造 Prompt，特別強調不要把白居易認成辛棄疾
+                # 重新打造 Prompt
                 system_prompt = """你是一位精通中國古典文學、唐詩三百首與宋詞考證的泰斗級教授。
 請針對使用者輸入的詩詞或文言文，進行絕對精確、毫無破綻的全方位解析。
 
 【核心歷史考證規範】
-1. 必須嚴格核對作者身份，絕對不能張冠李戴！例如：「綠蟻新醅酒，紅泥小火爐。晚來天欲雪，能飲一杯無？」的作者是唐代大詩人【白居易】，絕對不是辛棄疾！請拿出你最高的文學專業，嚴禁瞎編！
+1. 必須嚴格核對作者身份，絕對不能張冠李戴！例如：「綠蟻新醅酒，紅泥小火爐。晚來天欲雪，能飲一杯無？」的作者是唐代大詩人【白居易】，絕對不是辛棄疾！「青山橫北郭，白水繞東城」作者是【李白】。請拿出最高的文學專業，嚴禁瞎編！
 2. 你只能、也必須完全使用「繁體中文（台灣白話文）」進行回答！絕對禁止使用英文或簡體字。
 3. 內文請直接輸出以下三個標題與內容，不需要任何額外的開場白或問候語。
 
@@ -46,22 +46,22 @@ if analyze_button:
 ### 🔍 深度文學賞析
 [用繁體中文分析這首詩或文章的核心意境、文學技巧、寫作背景，以及作者想傳達的深層情感。]"""
 
-                # 關鍵改動：將模型換成對亞洲詩詞更敏感的 mistralai/Mistral-Nemo-Instruct-2407
+                # 更換為標準 chat 模型：microsoft/Phi-3-mini-4k-instruct
                 response = client.chat_completion(
-                    model="mistralai/Mistral-Nemo-Instruct-2407",
+                    model="microsoft/Phi-3-mini-4k-instruct",
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": f"請嚴謹考證並完全使用繁體中文，依序進行作者介紹、翻譯與賞析：\n{user_input}"}
                     ],
-                    max_tokens=1200,
-                    temperature=0.01
+                    max_tokens=1000,
+                    temperature=0.1
                 )
                 
                 # 擷取回覆
                 result = response.choices[0].message.content
                 
                 # 顯示結果
-                st.success("🎉 全新大腦解析完成！")
+                st.success("🎉 解析完成！")
                 st.markdown(result.strip())
                 
             except Exception as e:
