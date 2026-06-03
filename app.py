@@ -47,4 +47,20 @@ if analyze_button:
 
                 response = client.chat_completion(
                     model="meta-llama/Meta-Llama-3-8B-Instruct",
-                    messages=
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": f"請解析以下這段古文：\n{user_input}"}
+                    ],
+                    max_tokens=1000,
+                    temperature=0.3
+                )
+                
+                # 擷取回覆
+                result = response.choices[0].message.content
+                
+                # 顯示結果
+                st.success("🎉 解析完成！")
+                st.markdown(result.strip())
+                
+            except Exception as e:
+                st.error(f"💥 解析發生錯誤：{e}\n請檢查您的 Token 是否正確，或稍後再試。")
