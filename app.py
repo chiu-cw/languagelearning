@@ -12,7 +12,7 @@ hf_token = st.sidebar.text_input("請輸入您的 Hugging Face Token", type="pas
 st.sidebar.markdown("[如何取得 Token？](https://huggingface.co/settings/tokens)")
 
 # 3. 主畫面：輸入框與分析按鈕
-user_input = st.text_area("請輸入唐詩（如送友人、靜夜思等）或文言文：", height=150, placeholder="例如：青山橫北郭，白水繞東城。")
+user_input = st.text_area("請輸入唐詩（如問劉十九、送友人）或文言文：", height=150, placeholder="例如：綠蟻新醅酒，紅泥小火爐。")
 analyze_button = st.button("全方位解析 ✨", type="primary")
 
 # 4. 解析邏輯處理
@@ -22,18 +22,18 @@ if analyze_button:
     elif not user_input.strip():
         st.warning("⚠️ 請輸入需要解析的詩詞或古文。")
     else:
-        with st.spinner("⏳ AI 正在考證古籍、嚴謹推敲文意中..."):
+        with st.spinner("⏳ 新大腦正在精密考證古籍中..."):
             try:
                 # 初始化客戶端
                 client = InferenceClient(token=hf_token)
                 
-                # 在 Prompt 中加入嚴格的「事實查核」與「禁止胡扯」指令
-                system_prompt = """你是一位精通中國古典文學、唐詩三百首、宋詞與歷史考證的權威文學教授。
-請針對使用者輸入的詩詞或文言文，進行嚴謹、精確的全方位解析。
+                # 重新打造 Prompt，特別強調不要把白居易認成辛棄疾
+                system_prompt = """你是一位精通中國古典文學、唐詩三百首與宋詞考證的泰斗級教授。
+請針對使用者輸入的詩詞或文言文，進行絕對精確、毫無破綻的全方位解析。
 
-【核心事實查核規範 - 絕對禁止胡扯】
-1. 必須嚴格比對歷史事實！在判定作者是誰時，請務必精確。例如：「青山橫北郭，白水繞東城」是李白的《送友人》，絕對不可錯認成李商隱、杜甫或其他詩人！若不確定，請查證後再回答。
-2. 你只能、也必須完全使用「繁體中文（台灣白話文）」進行回答！絕對禁止使用英文。
+【核心歷史考證規範】
+1. 必須嚴格核對作者身份，絕對不能張冠李戴！例如：「綠蟻新醅酒，紅泥小火爐。晚來天欲雪，能飲一杯無？」的作者是唐代大詩人【白居易】，絕對不是辛棄疾！請拿出你最高的文學專業，嚴禁瞎編！
+2. 你只能、也必須完全使用「繁體中文（台灣白話文）」進行回答！絕對禁止使用英文或簡體字。
 3. 內文請直接輸出以下三個標題與內容，不需要任何額外的開場白或問候語。
 
 回覆結構規範（請嚴格遵循以下順序輸出標題）：
@@ -46,22 +46,19 @@ if analyze_button:
 ### 🔍 深度文學賞析
 [用繁體中文分析這首詩或文章的核心意境、文學技巧、寫作背景，以及作者想傳達的深層情感。]"""
 
+                # 關鍵改動：將模型換成對亞洲詩詞更敏感的 mistralai/Mistral-Nemo-Instruct-2407
                 response = client.chat_completion(
-                    model="meta-llama/Meta-Llama-3-8B-Instruct",
+                    model="mistralai/Mistral-Nemo-Instruct-2407",
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": f"請嚴謹考證並完全使用繁體中文，依序進行作者介紹、翻譯與賞析：\n{user_input}"}
                     ],
                     max_tokens=1200,
-                    temperature=0.05 # 降到極限接近 0，徹底消滅 AI 的胡思亂想與瞎編機率
+                    temperature=0.01 # 降到最底，不准它有任何發揮與瞎編的空間
                 )
                 
                 # 擷取回覆
                 result = response.choices[0].message.content
                 
                 # 顯示結果
-                st.success("🎉 解析完成！")
-                st.markdown(result.strip())
-                
-            except Exception as e:
-                st.error(f"💥 解析發生錯誤：{e}\n請檢查您的 Token 是否正確，或稍後再試。")
+                st.success("🎉 全
