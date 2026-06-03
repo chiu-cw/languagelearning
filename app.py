@@ -54,11 +54,15 @@ if analyze_button:
                         {"role": "user", "content": f"請嚴謹考證並完全使用繁體中文，依序進行作者介紹、翻譯與賞析：\n{user_input}"}
                     ],
                     max_tokens=1200,
-                    temperature=0.01 # 降到最底，不准它有任何發揮與瞎編的空間
+                    temperature=0.01
                 )
                 
                 # 擷取回覆
                 result = response.choices[0].message.content
                 
                 # 顯示結果
-                st.success("🎉 全
+                st.success("🎉 全新大腦解析完成！")
+                st.markdown(result.strip())
+                
+            except Exception as e:
+                st.error(f"💥 解析發生錯誤：{e}\n請檢查您的 Token 是否正確，或稍後再試。")
