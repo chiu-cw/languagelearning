@@ -27,18 +27,18 @@ if translate_button:
                 # 初始化客戶端
                 client = InferenceClient(token=hf_token)
                 
-                # 改用符合最新規範的 chat_completion 方法（相容性最高）
+                # 在 system prompt 強烈要求必須使用台灣繁體中文
                 response = client.chat_completion(
                     model="meta-llama/Meta-Llama-3-8B-Instruct",
                     messages=[
                         {
                             "role": "system", 
-                            "content": "你是一位精通文言文與現代漢語轉換的文學專家。請將使用者輸入的文言文，翻譯成流暢、通順且精確的現代白話文。請直接輸出翻譯結果，不需要任何額外的解釋、問候語或引號。"
+                            "content": "你是一位精通文言文與現代漢語轉換的文學專家。請將使用者輸入的文言文，翻譯成流暢、通順且精確的現代繁體中文（台灣白話文）。核心規範：請絕對必須完全使用繁體中文回答，禁止使用英文回覆！請直接輸出翻譯結果，不需要任何額外的解釋或問候語。"
                         },
-                        {"role": "user", "content": user_input}
+                        {"role": "user", "content": f"請將這段古文翻譯成繁體中文：\n{user_input}"}
                     ],
                     max_tokens=512,
-                    temperature=0.3
+                    temperature=0.2 # 降低隨機性，讓它更聽話
                 )
                 
                 # 擷取翻譯文本
