@@ -24,25 +24,30 @@ if translate_button:
     else:
         with st.spinner("⏳ AI 正在挑燈夜讀、推敲字句中..."):
             try:
-                # 使用 Meta 最新的開源大模型 Llama 3 (8B)
-                client = InferenceClient(
+                # 初始化客戶端
+                client = InferenceClient(token=hf_token)
+                
+                # 改用符合最新規範的 chat_completion 方法（相容性最高）
+                response = client.chat_completion(
                     model="meta-llama/Meta-Llama-3-8B-Instruct",
-                    token=hf_token
-                )
-                
-                # 設定 Prompt 引導 AI 進行翻譯
-                prompt = f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n你是一位精通文言文與現代漢語轉換的文學專家。請將使用者輸入的文言文，翻譯成流暢、通順且精確的現代白話文。請直接輸出翻譯結果，不需要任何額外的解釋或問候語。<|eot_id|><|start_header_id|>user<|end_header_id|>\n{user_input}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n"
-                
-                response = client.text_generation(
-                    prompt,
-                    max_new_tokens=512,
+                    messages=[
+                        {
+                            "role": "system", 
+                            "content": "你是一位精通文言文與現代漢語轉換的文學專家。請將使用者輸入的文言文，翻譯成流暢、通順且精確的現代白話文。請直接輸出翻譯結果，不需要任何額外的解釋、問候語或引號。"
+                        },
+                        {"role": "user", "content": user_input}
+                    ],
+                    max_tokens=512,
                     temperature=0.3
                 )
+                
+                # 擷取翻譯文本
+                result = response.choices[0].message.content
                 
                 # 顯示翻譯結果
                 st.success("🎉 翻譯完成！")
                 st.subheader("📝 現代白話文翻譯：")
-                st.info(response.strip())
+                st.info(result.strip())
                 
             except Exception as e:
                 st.error(f"💥 翻譯發生錯誤：{e}\n請檢查您的 Token 是否正確，或稍後再試。")
