@@ -46,9 +46,9 @@ if analyze_button:
 ### 🔍 深度文學賞析
 [用繁體中文分析這首詩或文章的核心意境、文學技巧、寫作背景，以及作者想傳達的深層情感。]"""
 
-                # 更換為標準 chat 模型：microsoft/Phi-3-mini-4k-instruct
+                # 更換為 Hugging Face 目前最穩定且強力支援的 Qwen/Qwen2.5-7B-Instruct
                 response = client.chat_completion(
-                    model="microsoft/Phi-3-mini-4k-instruct",
+                    model="Qwen/Qwen2.5-7B-Instruct",
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": f"請嚴謹考證並完全使用繁體中文，依序進行作者介紹、翻譯與賞析：\n{user_input}"}
